@@ -1,29 +1,37 @@
 package com.example.exchangerateservice.service;
 
-import com.example.exchangerateservice.model.Giph;
-import com.example.exchangerateservice.model.Giphs;
+import com.example.exchangerateservice.utils.CourseApiDateConverter;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Map;
+@Service
+public class RateService {
 
-public interface RateService {
-    Map<String, Double> getCourses();
+    private final CourseService courseService;
+    private final GiphyService giphyService;
+    private final CourseApiDateConverter courseApiDateConverter;
 
-    Map<String, Double> getHistoricalCourses(String date);
+    public RateService(CourseService courseService, GiphyService giphyService, CourseApiDateConverter courseApiDateConverter) {
+        this.courseService = courseService;
+        this.giphyService = giphyService;
+        this.courseApiDateConverter = courseApiDateConverter;
+    }
 
-    Double getRate(Map<String, Double> map, String courseName);
+    public ObjectNode getCourse(String currencyName) {
+        var node = JsonNodeFactory.instance.objectNode();
 
-    String getLastDay();
+        try {
+            Double lastRate = courseService.getRate(courseService.getCourses(), currencyName);
+            Double yesterdayRate = courseService.getRate(courseService.getHistoricalCourses(courseApiDateConverter.getLastDay()), currencyName);
+            String gif = giphyService.getGifByCompare(lastRate, yesterdayRate).getEmbedUrl();
 
-    String getDayInFormat(SimpleDateFormat simpleDateFormat, Calendar calendar);
-
-    Giph getRandomGif(Giphs giphs);
-
-    Giphs getGifs(String name);
-
-    Giph getGifByCompare(Double a, Double b);
-
-    ObjectNode getCourse(String currencyName);
+            node.put("last", lastRate);
+            node.put("yesterday", yesterdayRate);
+            node.put("gif", gif);
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Not Found Currency");
+        }
+        return node;
+    }
 }
