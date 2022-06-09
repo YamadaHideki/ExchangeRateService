@@ -4,6 +4,8 @@ import com.example.exchangerateservice.client.CourseApiClient;
 import com.example.exchangerateservice.client.GiphyApiClient;
 import com.example.exchangerateservice.model.Giph;
 import com.example.exchangerateservice.model.Giphs;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -39,6 +41,25 @@ public class RateServiceImpl implements RateService {
     }
 
     @Override
+    public ObjectNode getCourse(String currencyName) {
+        var node = JsonNodeFactory.instance.objectNode();
+
+        try {
+            Double lastRate = getRate(getCourses(), currencyName);
+            Double yesterdayRate = getRate(getHistoricalCourses(getLastDay()), currencyName);
+            String gif = getGifByCompare(lastRate, yesterdayRate).getEmbedUrl();
+
+            node.put("last", lastRate);
+            node.put("yesterday", yesterdayRate);
+            node.put("gif", gif);
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Not Found Currency");
+        }
+
+        return node;
+    }
+
+    @Override
     public Giphs getGifs(String name) {
         return giphyApiClient.searchGif(name);
     }
@@ -49,6 +70,11 @@ public class RateServiceImpl implements RateService {
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendar.add(Calendar.DATE, -1);
         return getDayInFormat(new SimpleDateFormat("yyyy-MM-dd"), calendar);
+    }
+
+    @Override
+    public Giph getGifByCompare(Double a, Double b) {
+        return a < b ? getRandomGif(getGifs("reach")) : getRandomGif(getGifs("broke"));
     }
 
     @Override
