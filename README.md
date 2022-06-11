@@ -33,11 +33,11 @@ http://localhost:8080/api/currencies/afn
 
 ```
 docker pull yamadahideki/exchange-rate-service
-docker run -d -p 8080:8080 -t exchange-rate-service:0.0.1
+docker run -d -p 8080:8080 -t exchange-rate-service:0.0.2
 ```
 
 ## JDK 11
 ```
 gradlew -buid
-java -jar build/libs/exchange-rate-service-0.0.1-SNAPSHOT.jar
+java -jar build/libs/exchange-rate-service-0.0.2-SNAPSHOT.jar
 ```
