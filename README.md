@@ -38,6 +38,6 @@ docker run -d -p 8080:8080 -t exchange-rate-service:0.0.2
 
 ## JDK 11
 ```
-gradlew -buid
+gradlew buid
 java -jar build/libs/exchange-rate-service-0.0.2-SNAPSHOT.jar
 ```
