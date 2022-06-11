@@ -14,6 +14,6 @@ public interface CourseApiClient {
     /**
      * example data: "yyyy-MM-dd"
      */
-    @GetMapping("/historical/{data}.json?app_id=" + "${application.config.course-api.token}" + "&base=" + "${application.config.course-api.base-course}")
-    Courses getHistoricalCourses(@PathVariable String data);
+    @GetMapping("/historical/{date}.json?app_id=" + "${application.config.course-api.token}" + "&base=" + "${application.config.course-api.base-course}")
+    Courses getHistoricalCourses(@PathVariable String date);
 }

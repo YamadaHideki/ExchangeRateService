@@ -64,7 +64,7 @@ class ExchangeRateServiceApplicationTests {
         when(courseApiClient.getHistoricalCourses(anyString())).thenReturn(coursesHistory);
         when(giphyApiClient.searchGif(anyString())).thenReturn(giphs);
 
-        ResponseEntity<String> responseEntity = rateServiceController.getLastCourses("AMD");
+        ResponseEntity<String> responseEntity = rateServiceController.getCourse("AMD");
 
         Assertions.assertNotNull(responseEntity);
         Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
